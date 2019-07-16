@@ -1,0 +1,11 @@
+{
+  "name": "demo-typescript-parsing",
+  "scripts": {
+    "start": "ts-node-dev --respawn src/main.ts"
+  },
+  "dependencies": {
+    "@types/node": "^12.6.3",
+    "ts-node-dev": "^1.0.0-pre.40",
+    "typescript": "^3.5.3"
+  }
+}
