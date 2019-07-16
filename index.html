@@ -179,6 +179,53 @@ interface User {
             What's an AST? -> https://ts-ast-viewer.com
           </script>
         </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## Spot CLI
+
+            We use [oclif](https://github.com/oclif/oclif) (Node.JS Open CLI Framework).
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## Example CLI command
+
+            *cli/src/commands/validate.ts*
+
+            ```typescript
+import { Command, flags } from "@oclif/command";
+import { safeParseContract } from "../common/safe-parse";
+
+export default class Validate extends Command {
+  static description = "Validate a Spot contract";
+
+  static args = [
+    {
+      name: "spot_contract",
+      required: true,
+      description: "path to Spot contract"
+    }
+  ];
+
+  async run() {
+    const { args } = this.parse(Validate);
+    safeParseContract.call(this, args.spot_contract);
+    this.log("Contract is valid");
+  }
+}            
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## Let's check out the code!
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## Thank you
+          </script>
+        </section>
       </div>
     </div>
     <script src="js/reveal.js"></script>
