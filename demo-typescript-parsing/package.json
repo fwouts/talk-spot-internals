@@ -1,10 +1,12 @@
 {
   "name": "demo-typescript-parsing",
   "scripts": {
-    "start": "ts-node-dev --respawn src/main.ts"
+    "start": "ts-node-dev --respawn src/main.ts",
+    "start:morph": "ts-node-dev --respawn src/morph.ts"
   },
   "dependencies": {
     "@types/node": "^12.6.3",
+    "ts-morph": "^3.1.2",
     "ts-node-dev": "^1.0.0-pre.40",
     "typescript": "^3.5.3"
   }
