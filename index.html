@@ -94,6 +94,61 @@ type Pets = Pet[];
             ```
           </script>
         </section>
+        <section data-markdown data-separator-vertical="!!">
+          <script type="text/template">
+            ### TypeScript subtleties
+
+            Pop quizz! What's the difference between:
+
+            ```typescript
+// Option A
+interface User {
+  name: string;
+}
+            ```
+
+            ```typescript
+// Option B
+interface User {
+  name: string | null;
+}
+            ```
+
+            ```typescript
+// Option C
+interface User {
+  name?: string;
+}
+            ```
+
+            ```typescript
+// Option D
+interface User {
+  name?: string | null;
+}
+            ```
+
+            !!
+
+            ```json
+            {
+              "name": "Mike"
+            }
+            ```
+
+            ```json
+            {
+              "name": null
+            }
+            ```
+
+            ```json
+            {
+              // name omitted
+            }
+            ```
+          </script>
+        </section>
         <section>
             <h2>Spot flow</h2>
 
@@ -119,8 +174,9 @@ type Pets = Pet[];
         </section>
         <section data-markdown>
           <script type="text/template">
-            # TypeScript AST
-            https://ts-ast-viewer.com
+            ## Parsing TypeScript
+
+            What's an AST? -> https://ts-ast-viewer.com
           </script>
         </section>
       </div>
