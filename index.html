@@ -32,6 +32,10 @@
         max-height: none;
         white-space: pre;
       }
+
+      .centered-code {
+        width: fit-content !important;
+      }
     </style>
   </head>
   <body>
@@ -57,102 +61,102 @@
         </section>
         <section data-markdown>
           <script type="text/template">
-            ### OpenAPI 3 schemas
-            ```yaml
-components:
-  schemas:
-    Pet:
-      required:
-        - id
-        - name
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        tag:
-          type: string
-    Pets:
-      type: array
-      items:
-        $ref: "#/components/schemas/Pet"
-            ```
+                        ### OpenAPI 3 schemas
+                        ```yaml
+            components:
+              schemas:
+                Pet:
+                  required:
+                    - id
+                    - name
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                    name:
+                      type: string
+                    tag:
+                      type: string
+                Pets:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Pet"
+                        ```
           </script>
         </section>
         <section data-markdown>
           <script type="text/template">
-            ### Spot schemas
-            ```typescript
-interface Pet {
-  id: Int64;
-  name: String;
-  tag?: String;
-}
+                        ### Spot schemas
+                        ```typescript
+            interface Pet {
+              id: Int64;
+              name: String;
+              tag?: String;
+            }
 
-type Pets = Pet[];
-            ```
+            type Pets = Pet[];
+                        ```
           </script>
         </section>
         <section data-markdown data-separator-vertical="!!">
           <script type="text/template">
-            ### TypeScript subtleties
+                        ### TypeScript subtleties
 
-            Pop quizz! What's the difference between:
+                        Pop quizz! What's the difference between:
 
-            ```typescript
-// Option A
-interface User {
-  name: string;
-}
-            ```
-
-            ```typescript
-// Option B
-interface User {
-  name: string | null;
-}
-            ```
-
-            ```typescript
-// Option C
-interface User {
-  name?: string;
-}
-            ```
-
-            ```typescript
-// Option D
-interface User {
-  name?: string | null;
-}
-            ```
-
-            !!
-
-            ```json
-            {
-              "name": "Mike"
+                        ```typescript
+            // Option A
+            interface User {
+              name: string;
             }
-            ```
+                        ```
 
-            ```json
-            {
-              "name": null
+                        ```typescript
+            // Option B
+            interface User {
+              name: string | null;
             }
-            ```
+                        ```
 
-            ```json
-            {
-              // name omitted
+                        ```typescript
+            // Option C
+            interface User {
+              name?: string;
             }
-            ```
+                        ```
+
+                        ```typescript
+            // Option D
+            interface User {
+              name?: string | null;
+            }
+                        ```
+
+                        !!
+
+                        ```json
+                        {
+                          "name": "Mike"
+                        }
+                        ```
+
+                        ```json
+                        {
+                          "name": null
+                        }
+                        ```
+
+                        ```json
+                        {
+                          // name omitted
+                        }
+                        ```
           </script>
         </section>
         <section>
-            <h2>Spot flow</h2>
+          <h2>Spot flow</h2>
 
-<pre>
+          <pre>
   +------------+    +-----------------+      +--------------+
   |            |    |                 |      |              |
   | TypeScript +---->  Spot in-memory +------>   OpenAPI 3  |
@@ -170,13 +174,105 @@ interface User {
                              +---------------> other formats |
                                              |               |
                                              +---------------+  
-</pre>
+</pre
+          >
         </section>
         <section data-markdown>
           <script type="text/template">
             ## Parsing TypeScript
 
             What's an AST? -> https://ts-ast-viewer.com
+          </script>
+        </section>
+        <section>
+          <h2>Internal models</h2>
+
+          <pre class="centered-code">
+    +-------------------+
+    |   TypeScript AST  |
+    +---------+---------+
+              |
+              |
+   +----------v----------+
+   |  Locatable nodes    |
+   +----------+----------+
+              |
+              |
+     +--------v---------+
+     |    Validation    |
+     +--------+---------+
+              |
+              |
+      +-------v--------+
+      |  Simple nodes  |
+      +-------+--------+
+              |
+              v
+      various operations   
+</pre
+          >
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## [Locatable nodes](https://github.com/airtasker/spot/blob/master/lib/src/models/nodes.ts)
+
+            ```typescript
+            /** A locatable value */
+            export interface Locatable<T> {
+              value: T;
+              /** file path where the value is declared */
+              location: string;
+              /** line number that the value begins on */
+              line: number;
+            }
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## [Locatable nodes](https://github.com/airtasker/spot/blob/master/lib/src/models/nodes.ts)
+
+            ```typescript
+            export interface EndpointNode {
+              name: Locatable<string>;
+              description?: Locatable<string>;
+              isDraft: boolean;
+              tags?: Locatable<string[]>;
+              method: Locatable<HttpMethod>;
+              path: Locatable<string>;
+              request?: Locatable<RequestNode>;
+              responses: Array<Locatable<ResponseNode>>;
+              defaultResponse?: Locatable<DefaultResponseNode>;
+              tests: Array<Locatable<TestNode>>;
+            }
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## [Definition nodes](https://github.com/airtasker/spot/blob/master/lib/src/models/definitions.ts)
+
+            ```typescript
+            export interface EndpointDefinition {
+              name: string;
+              description?: string;
+              isDraft: boolean;
+              tags: string[];
+              method: HttpMethod;
+              path: string;
+              request: RequestDefinition;
+              responses: ResponseDefinition[];
+              defaultResponse?: DefaultResponseDefinition;
+              tests: TestDefinition[];
+            }
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## OpenAPI 3 genewrator
+
+            Let's look at [the code](https://github.com/airtasker/spot/blob/master/lib/src/generators/contract/openapi3.ts)...
           </script>
         </section>
         <section data-markdown>
@@ -193,32 +289,27 @@ interface User {
             *cli/src/commands/validate.ts*
 
             ```typescript
-import { Command, flags } from "@oclif/command";
-import { safeParseContract } from "../common/safe-parse";
+            import { Command, flags } from "@oclif/command";
+            import { safeParseContract } from "../common/safe-parse";
 
-export default class Validate extends Command {
-  static description = "Validate a Spot contract";
+            export default class Validate extends Command {
+              static description = "Validate a Spot contract";
 
-  static args = [
-    {
-      name: "spot_contract",
-      required: true,
-      description: "path to Spot contract"
-    }
-  ];
+              static args = [
+                {
+                  name: "spot_contract",
+                  required: true,
+                  description: "path to Spot contract"
+                }
+              ];
 
-  async run() {
-    const { args } = this.parse(Validate);
-    safeParseContract.call(this, args.spot_contract);
-    this.log("Contract is valid");
-  }
-}            
-            ```
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-            ## Let's check out the code!
+              async run() {
+                const { args } = this.parse(Validate);
+                safeParseContract.call(this, args.spot_contract);
+                this.log("Contract is valid");
+              }
+            }
+              ```
           </script>
         </section>
         <section data-markdown>
